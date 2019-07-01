@@ -1,5 +1,6 @@
 package com.thkmon.diff.util;
 
+import com.thkmon.diff.data.StringData;
 import com.thkmon.diff.data.StringList;
 
 public class StringUtil {
@@ -109,18 +110,27 @@ public class StringUtil {
 	 * @param endIdx
 	 * @return
 	 */
-	public static String getStringByList(StringList strList, int beginIdx, int endIdx) {
-		
+	public static StringData getStringByList(StringList strList, int beginIdx, int endIdx) {
 		StringBuffer buff = new StringBuffer();
 		
 		int newBeginIdx = getIndexOfNotSpaceLine(strList, beginIdx, endIdx);
 		if (newBeginIdx == -1) {
-			return "";
+			// 빈 객체를 리턴한다.
+			StringData data = new StringData();
+			data.setStr("");
+			data.setBeginIdx(beginIdx);
+			data.setEndIdx(endIdx);
+			return data;
 		}
 		
 		int newEndIdx = getIndexOfNotSpaceLineBackward(strList, beginIdx, endIdx);
 		if (newEndIdx == -1) {
-			return "";
+			// 빈 객체를 리턴한다.
+			StringData data = new StringData();
+			data.setStr("");
+			data.setBeginIdx(beginIdx);
+			data.setEndIdx(endIdx);
+			return data;
 		}
 		
 		for (int i=newBeginIdx; i<=newEndIdx; i++) {
@@ -130,7 +140,12 @@ public class StringUtil {
 			buff.append(strList.get(i));
 		}
 		
-		return buff.toString();
+		// 보정된 라인수를 set해서 리턴한다.
+		StringData data = new StringData();
+		data.setStr(buff.toString());
+		data.setBeginIdx(newBeginIdx);
+		data.setEndIdx(newEndIdx);
+		return data;
 	}
 	
 	

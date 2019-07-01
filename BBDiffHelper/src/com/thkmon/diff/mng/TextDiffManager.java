@@ -1,5 +1,6 @@
 package com.thkmon.diff.mng;
 
+import com.thkmon.diff.data.StringData;
 import com.thkmon.diff.data.StringList;
 import com.thkmon.diff.form.DiffForm;
 import com.thkmon.diff.util.LogUtil;
@@ -261,8 +262,10 @@ public class TextDiffManager {
 	
 	
 	private void printModifyInfo(StringList diffResultList, StringList strList1, StringList strList2, int preRow1, int preRow2, int axisRow1, int axisRow2) {
-		String asisStr = StringUtil.getStringByList(strList1, preRow1, axisRow1 - 1);
-		String tobeStr = StringUtil.getStringByList(strList2, preRow2, axisRow2 - 1);
+		StringData asisData = StringUtil.getStringByList(strList1, preRow1, axisRow1 - 1);
+		StringData tobeData = StringUtil.getStringByList(strList2, preRow2, axisRow2 - 1);
+		String asisStr = asisData.getStr();
+		String tobeStr = tobeData.getStr();
 		
 		boolean bAsisEmpty = false;
 		if (StringUtil.checkIsSpaceLine(asisStr)) {
@@ -275,7 +278,7 @@ public class TextDiffManager {
 		}
 		
 		if (!bAsisEmpty && !bTobeEmpty) {
-			diffResultList.add("\n라인 : " + preRow1);
+			diffResultList.add("\n라인 : " + (asisData.getBeginIdx() + 1));
 			diffResultList.add("내용 : 수정");
 			diffResultList.add("[AS-IS]");
 			diffResultList.add(asisStr);
@@ -284,19 +287,20 @@ public class TextDiffManager {
 			diffResultList.add(tobeStr);
 			
 		} else if (bAsisEmpty && !bTobeEmpty) {
-			diffResultList.add("\n라인 : " + preRow1);
+			diffResultList.add("\n라인 : " + (asisData.getBeginIdx() + 1));
 			diffResultList.add("내용 : 추가");
 			diffResultList.add(tobeStr);
 			
 		} else if (!bAsisEmpty && bTobeEmpty) {
-			diffResultList.add("\n라인 : " + preRow1);
+			diffResultList.add("\n라인 : " + (asisData.getBeginIdx() + 1));
 			diffResultList.add("내용 : 삭제");
 			diffResultList.add(asisStr);
 		}
 	}
 	
 	private void printDeleteInfo(StringList diffResultList, StringList strList1, int preRow1, int axisRow1) {
-		String delStr = StringUtil.getStringByList(strList1, preRow1, axisRow1 - 1);
+		StringData delData = StringUtil.getStringByList(strList1, preRow1, axisRow1 - 1);
+		String delStr = delData.getStr();
 		
 		boolean bEmpty = false;
 		if (StringUtil.checkIsSpaceLine(delStr)) {
@@ -304,14 +308,15 @@ public class TextDiffManager {
 		}
 		
 		if (!bEmpty) {
-			diffResultList.add("\n라인 : " + preRow1);
+			diffResultList.add("\n라인 : " + (delData.getBeginIdx() + 1));
 			diffResultList.add("내용 : 삭제");
 			diffResultList.add(delStr);
 		}
 	}
 	
 	private void printAddInfo(StringList diffResultList, StringList strList2, int preRow2, int axisRow2) {
-		String addStr = StringUtil.getStringByList(strList2, preRow2, axisRow2 - 1);
+		StringData addData = StringUtil.getStringByList(strList2, preRow2, axisRow2 - 1);
+		String addStr = addData.getStr();
 		
 		boolean bEmpty = false;
 		if (StringUtil.checkIsSpaceLine(addStr)) {
@@ -319,7 +324,7 @@ public class TextDiffManager {
 		}
 		
 		if (!bEmpty) {
-			diffResultList.add("\n라인 : " + preRow2);
+			diffResultList.add("\n라인 : " + (addData.getBeginIdx() + 1));
 			diffResultList.add("내용 : 추가");
 			diffResultList.add(addStr);
 		}
