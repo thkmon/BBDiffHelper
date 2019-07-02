@@ -1,46 +1,52 @@
 package com.thkmon.diff.mng;
 
-import com.thkmon.diff.data.StringData;
+import com.thkmon.diff.data.LineData;
 import com.thkmon.diff.data.StringList;
-import com.thkmon.diff.form.DiffForm;
 import com.thkmon.diff.util.LogUtil;
 import com.thkmon.diff.util.StringUtil;
 
 public class TextDiffManager {
 	
+	public static String NO_DIFF = "차이점 없음";
 	
-	public void diffString(String str1, String str2) {
+	
+	public String diffString(String targetFilePath, String asisStr, String tobeStr) {
+		
+		String result = "";
+		
 		try {
-			StringList strList1 = StringUtil.makeStringList(str1);
-			StringList strList2 = StringUtil.makeStringList(str2);
+			StringList strList1 = StringUtil.makeStringList(asisStr);
+			StringList strList2 = StringUtil.makeStringList(tobeStr);
 			
-			diffStringList(strList1, strList2);
+			result = diffStringList(targetFilePath, strList1, strList2);
 			
 		} catch (Exception e) {
 			LogUtil.debug(e);
 		}
+		
+		return result;
 	}
 	
 	
-	public void diffStringList(StringList strList1, StringList strList2) {
+	public String diffStringList(String targetFilePath, StringList asisStrList, StringList tobeStrList) {
 		
-		int count1 = strList1.size();
-		int count2 = strList2.size();
+		int count1 = asisStrList.size();
+		int count2 = tobeStrList.size();
 		int count = (count1 < count2) ? count1 : count2;
 		
 		// 내용 동일한 라인은 최대한 건너뛰고 시작한다.
 		int i = 0;
 		for (i=0; i<count; i++) {
-			if (!strList1.get(i).equals(strList2.get(i))) {
+			if (!asisStrList.get(i).equals(tobeStrList.get(i))) {
 				break;
 			}
 		}
 		
-		diffStringList(strList1, strList2, i);
+		return diffStringList(targetFilePath, asisStrList, tobeStrList, i);
 	}
 	
 	
-	public void diffStringList(StringList strList1, StringList strList2, int startRow) {
+	public String diffStringList(String targetFilePath, StringList strList1, StringList strList2, int startRow) {
 		
 		StringList diffResultList = new StringList();
 		
@@ -101,13 +107,13 @@ public class TextDiffManager {
 				// 한 줄 차이. 스킵해도 됨
 				
 			} else if (axisRow1 - preRow1 > 0 && axisRow2 - preRow2 > 0) {
-				printModifyInfo(diffResultList, strList1, strList2, preRow1, preRow2, axisRow1, axisRow2);
+				printModifyInfo(targetFilePath, diffResultList, strList1, strList2, preRow1, preRow2, axisRow1, axisRow2);
 					
 			} else if (axisRow1 - preRow1 > 0) {
-				printDeleteInfo(diffResultList, strList1, preRow1, axisRow1);
+				printDeleteInfo(targetFilePath, diffResultList, strList1, preRow1, axisRow1);
 				
 			} else if (axisRow2 - preRow2 > 0) {
-				printAddInfo(diffResultList, strList2, preRow2, axisRow2);
+				printAddInfo(targetFilePath, diffResultList, strList2, preRow2, axisRow2);
 			}
 			
 			if (!bExitLoop) {
@@ -130,10 +136,12 @@ public class TextDiffManager {
 			}
 		}
 		
-		printResultToConsole(diffResultList);
+		return printResultToConsole(diffResultList);
 	}
 	
-	public void printResultToConsole(StringList diffResultList) {
+	
+	public String printResultToConsole(StringList diffResultList) {
+		String result = "";
 		
 		if (diffResultList != null && diffResultList.size() > 0) {
 			StringBuffer buff = new StringBuffer();
@@ -142,7 +150,7 @@ public class TextDiffManager {
 			int diffResultCount = diffResultList.size();
 			for (int i=0; i<diffResultCount; i++) {
 				if (i > 0) {
-					buff.append("\n");
+					buff.append(StringUtil.ENTER);
 				}
 				
 				str = diffResultList.get(i);
@@ -153,19 +161,25 @@ public class TextDiffManager {
 				buff.append(str);
 			}
 			
-			String result = StringUtil.trim(buff.toString(), "\n");
-			result = "----------\n경로 : \n" + result + "\n----------";
+			result = buff.toString();
 			
-			if (DiffForm.consoleArea != null) {
-				DiffForm.consoleArea.setText(result);
+			if (result.startsWith(StringUtil.ENTER)) {
+				result = result.substring(2);
 			}
+//			
+//			while (result.endsWith(StringUtil.ENTER)) {
+//				result = result.substring(0, result.length() - 2);
+//			}
+				
+			result = StringUtil.ENTER + "----------" + StringUtil.ENTER + result + StringUtil.ENTER + "----------";
 			
 		} else {
-			if (DiffForm.consoleArea != null) {
-				DiffForm.consoleArea.setText("차이점 없음");
-			}
+			result = NO_DIFF;
 		}
+		
+		return result;
 	}
+	
 	
 	public int[] findSameLine(StringList diffList, StringList strList1, StringList strList2, int rowToStart1, int rowToStart2) {
 		int lastIndex1 = strList1.size() - 1;
@@ -261,9 +275,9 @@ public class TextDiffManager {
 	}
 	
 	
-	private void printModifyInfo(StringList diffResultList, StringList strList1, StringList strList2, int preRow1, int preRow2, int axisRow1, int axisRow2) {
-		StringData asisData = StringUtil.getStringByList(strList1, preRow1, axisRow1 - 1);
-		StringData tobeData = StringUtil.getStringByList(strList2, preRow2, axisRow2 - 1);
+	private void printModifyInfo(String targetFilePath, StringList diffResultList, StringList strList1, StringList strList2, int preRow1, int preRow2, int axisRow1, int axisRow2) {
+		LineData asisData = StringUtil.getStringByList(strList1, preRow1, axisRow1 - 1);
+		LineData tobeData = StringUtil.getStringByList(strList2, preRow2, axisRow2 - 1);
 		String asisStr = asisData.getStr();
 		String tobeStr = tobeData.getStr();
 		
@@ -278,7 +292,9 @@ public class TextDiffManager {
 		}
 		
 		if (!bAsisEmpty && !bTobeEmpty) {
-			diffResultList.add("\n라인 : " + (asisData.getBeginIdx() + 1));
+			diffResultList.add("");
+			diffResultList.add("경로 : " + targetFilePath);
+			diffResultList.add("라인 : " + (asisData.getBeginIdx() + 1));
 			diffResultList.add("내용 : 수정");
 			diffResultList.add("[AS-IS]");
 			diffResultList.add(asisStr);
@@ -287,19 +303,23 @@ public class TextDiffManager {
 			diffResultList.add(tobeStr);
 			
 		} else if (bAsisEmpty && !bTobeEmpty) {
-			diffResultList.add("\n라인 : " + (asisData.getBeginIdx() + 1));
+			diffResultList.add("");
+			diffResultList.add("경로 : " + targetFilePath);
+			diffResultList.add("라인 : " + (asisData.getBeginIdx() + 1));
 			diffResultList.add("내용 : 추가");
 			diffResultList.add(tobeStr);
 			
 		} else if (!bAsisEmpty && bTobeEmpty) {
-			diffResultList.add("\n라인 : " + (asisData.getBeginIdx() + 1));
+			diffResultList.add("");
+			diffResultList.add("경로 : " + targetFilePath);
+			diffResultList.add("라인 : " + (asisData.getBeginIdx() + 1));
 			diffResultList.add("내용 : 삭제");
 			diffResultList.add(asisStr);
 		}
 	}
 	
-	private void printDeleteInfo(StringList diffResultList, StringList strList1, int preRow1, int axisRow1) {
-		StringData delData = StringUtil.getStringByList(strList1, preRow1, axisRow1 - 1);
+	private void printDeleteInfo(String targetFilePath, StringList diffResultList, StringList strList1, int preRow1, int axisRow1) {
+		LineData delData = StringUtil.getStringByList(strList1, preRow1, axisRow1 - 1);
 		String delStr = delData.getStr();
 		
 		boolean bEmpty = false;
@@ -308,14 +328,16 @@ public class TextDiffManager {
 		}
 		
 		if (!bEmpty) {
-			diffResultList.add("\n라인 : " + (delData.getBeginIdx() + 1));
+			diffResultList.add("");
+			diffResultList.add("경로 : " + targetFilePath);
+			diffResultList.add("라인 : " + (delData.getBeginIdx() + 1));
 			diffResultList.add("내용 : 삭제");
 			diffResultList.add(delStr);
 		}
 	}
 	
-	private void printAddInfo(StringList diffResultList, StringList strList2, int preRow2, int axisRow2) {
-		StringData addData = StringUtil.getStringByList(strList2, preRow2, axisRow2 - 1);
+	private void printAddInfo(String targetFilePath, StringList diffResultList, StringList strList2, int preRow2, int axisRow2) {
+		LineData addData = StringUtil.getStringByList(strList2, preRow2, axisRow2 - 1);
 		String addStr = addData.getStr();
 		
 		boolean bEmpty = false;
@@ -324,7 +346,9 @@ public class TextDiffManager {
 		}
 		
 		if (!bEmpty) {
-			diffResultList.add("\n라인 : " + (addData.getBeginIdx() + 1));
+			diffResultList.add("");
+			diffResultList.add("경로 : " + targetFilePath);
+			diffResultList.add("라인 : " + (addData.getBeginIdx() + 1));
 			diffResultList.add("내용 : 추가");
 			diffResultList.add(addStr);
 		}

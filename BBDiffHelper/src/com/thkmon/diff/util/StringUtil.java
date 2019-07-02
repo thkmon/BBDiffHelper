@@ -1,10 +1,54 @@
 package com.thkmon.diff.util;
 
-import com.thkmon.diff.data.StringData;
+import com.thkmon.diff.data.LineData;
 import com.thkmon.diff.data.StringList;
 
 public class StringUtil {
-
+	
+	public static String ENTER = "\r\n";
+	
+	
+	public static int parseInt(String str) {
+		int iResult = 0;
+		
+		try {
+			iResult = Integer.parseInt(str);
+		} catch (Exception e) {
+			iResult = 0;
+		}
+		
+		return iResult;
+	}
+	
+	
+	public static long parseLong(String str) {
+		long lResult = 0;
+		
+		try {
+			lResult = Long.parseLong(str);
+		} catch (Exception e) {
+			lResult = 0;
+		}
+		
+		return lResult;
+	}
+	
+	
+	public static boolean checkIsNumber(String str) {
+		boolean bResult = false;
+		
+		try {
+			if (str != null && str.length() > 0 && str.matches("[0-9]*")) {
+				bResult = true;
+			}
+		} catch (Exception e) {
+			bResult = false;
+		}
+		
+		return bResult;
+	}
+	
+	
 	public static StringList makeStringList(String str) {
 		
 		StringList resultList = new StringList();
@@ -14,7 +58,7 @@ public class StringUtil {
 		}
 		
 		while (str.indexOf("\r") > -1) {
-			str = str.replace("\r", "\n");
+			str = str.replace("\r", "");
 		}
 		
 		String[] strArr = str.split("\n");
@@ -110,13 +154,13 @@ public class StringUtil {
 	 * @param endIdx
 	 * @return
 	 */
-	public static StringData getStringByList(StringList strList, int beginIdx, int endIdx) {
+	public static LineData getStringByList(StringList strList, int beginIdx, int endIdx) {
 		StringBuffer buff = new StringBuffer();
 		
 		int newBeginIdx = getIndexOfNotSpaceLine(strList, beginIdx, endIdx);
 		if (newBeginIdx == -1) {
 			// 빈 객체를 리턴한다.
-			StringData data = new StringData();
+			LineData data = new LineData();
 			data.setStr("");
 			data.setBeginIdx(beginIdx);
 			data.setEndIdx(endIdx);
@@ -126,7 +170,7 @@ public class StringUtil {
 		int newEndIdx = getIndexOfNotSpaceLineBackward(strList, beginIdx, endIdx);
 		if (newEndIdx == -1) {
 			// 빈 객체를 리턴한다.
-			StringData data = new StringData();
+			LineData data = new LineData();
 			data.setStr("");
 			data.setBeginIdx(beginIdx);
 			data.setEndIdx(endIdx);
@@ -135,13 +179,13 @@ public class StringUtil {
 		
 		for (int i=newBeginIdx; i<=newEndIdx; i++) {
 			if (i > newBeginIdx) {
-				buff.append("\n");
+				buff.append(ENTER);
 			}
 			buff.append(strList.get(i));
 		}
 		
 		// 보정된 라인수를 set해서 리턴한다.
-		StringData data = new StringData();
+		LineData data = new LineData();
 		data.setStr(buff.toString());
 		data.setBeginIdx(newBeginIdx);
 		data.setEndIdx(newEndIdx);

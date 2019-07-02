@@ -18,7 +18,7 @@ import com.thkmon.diff.util.ClipboardUtil;
 
 public class DiffForm extends JFrame {
 
-	public static JTextArea consoleArea = null;
+//	public static JTextArea consoleArea = null;
 	
 	public DiffForm() {
 		
@@ -46,7 +46,7 @@ public class DiffForm extends JFrame {
 		scrollPane2.setBounds(400, areaTop, 370, areaHeight);
 		scrollPane2.setBackground(Color.white);
 		
-		consoleArea = new JTextArea();
+		final JTextArea consoleArea = new JTextArea();
 		consoleArea.setBounds(400, areaTop + areaHeight + 10, 370, areaHeight);
 		consoleArea.setBackground(Color.white);
 		JScrollPane scrollPane3 = new JScrollPane(consoleArea);
@@ -61,7 +61,11 @@ public class DiffForm extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				TextDiffManager diffMng = new TextDiffManager();
-				diffMng.diffString(area2.getText(), area1.getText());
+				String result = diffMng.diffString("", area2.getText(), area1.getText());
+				
+				if (consoleArea != null) {
+					consoleArea.setText(result);
+				}
 			}
 		});
 		
