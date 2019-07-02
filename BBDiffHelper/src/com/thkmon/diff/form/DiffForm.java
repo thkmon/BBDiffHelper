@@ -18,8 +18,6 @@ import com.thkmon.diff.util.ClipboardUtil;
 
 public class DiffForm extends JFrame {
 
-//	public static JTextArea consoleArea = null;
-	
 	public DiffForm() {
 		
 		int areaTop = 100;

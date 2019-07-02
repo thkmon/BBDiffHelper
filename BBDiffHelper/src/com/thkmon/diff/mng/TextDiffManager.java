@@ -104,7 +104,7 @@ public class TextDiffManager {
 			}
 			
 			if (axisRow1 - preRow1 == 0 && axisRow2 - preRow2 == 0) {
-				// 한 줄 차이. 스킵해도 됨
+				printModifyInfo(targetFilePath, diffResultList, strList1, strList2, preRow1, preRow2, axisRow1, axisRow2);
 				
 			} else if (axisRow1 - preRow1 > 0 && axisRow2 - preRow2 > 0) {
 				printModifyInfo(targetFilePath, diffResultList, strList1, strList2, preRow1, preRow2, axisRow1, axisRow2);
@@ -166,11 +166,7 @@ public class TextDiffManager {
 			if (result.startsWith(StringUtil.ENTER)) {
 				result = result.substring(2);
 			}
-//			
-//			while (result.endsWith(StringUtil.ENTER)) {
-//				result = result.substring(0, result.length() - 2);
-//			}
-				
+			
 			result = StringUtil.ENTER + "----------" + StringUtil.ENTER + result + StringUtil.ENTER + "----------";
 			
 		} else {
