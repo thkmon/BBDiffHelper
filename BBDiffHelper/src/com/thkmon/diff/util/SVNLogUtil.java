@@ -25,7 +25,7 @@ public class SVNLogUtil {
 	
 	private static String ENTER = StringUtil.ENTER;
 	
-	public static void getSVNDiff(String url, String strStartRevision, String strEndRevision) {
+	public static void getSVNDiff(String url, String strStartRevision, String strEndRevision, String charset) {
 		
 		try {
 			// String svnUser = "";
@@ -133,7 +133,7 @@ public class SVNLogUtil {
 			System.out.println("작업 종료");
 			
 			File file = new File("temp.txt");
-			FileWriteUtil.writeFile("temp.txt", resultBuff.toString(), false);
+			FileWriteUtil.writeFile("temp.txt", resultBuff.toString(), charset, false);
 //			if (SVNForm.area1 != null) {
 //				SVNForm.area1.setText(resultBuff.toString());
 //			}

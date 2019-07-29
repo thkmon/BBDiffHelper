@@ -23,15 +23,15 @@ import com.thkmon.diff.util.SVNLogUtil;
 public class SVNForm extends JFrame {
 
 //	public static JTextArea area1 = null;
-	
+	public static String version = "190729";
 	public static JTextField textField2 = null;
 	public static JTextField textField3 = null;
 	
 	public SVNForm() {
 		final SVNForm form = this;
 		
-		form.setTitle("BBDiffHelper");
-		form.setBounds(0, 0, 640, 210);
+		form.setTitle("BBDiffHelper_" + version);
+		form.setBounds(0, 0, 640, 250);
 		form.setLayout(null);
 		form.getContentPane().setLayout(null);
 		
@@ -43,6 +43,9 @@ public class SVNForm extends JFrame {
 		
 		JLabel label3 = new JLabel("REVISION 2");
 		label3.setBounds(20, 90, 150, 30);
+		
+		JLabel label4 = new JLabel("CHARSET");
+		label4.setBounds(20, 130, 150, 30);
 		
 		final JTextField textField1 = new JTextField();
 		textField1.setBounds(100, 10, 500, 30);
@@ -61,6 +64,10 @@ public class SVNForm extends JFrame {
 		textField3 = new JTextField();
 		textField3.setBounds(100, 90, 150, 30);
 		
+		final JTextField textField4 = new JTextField();
+		textField4.setText("UTF-8");
+		textField4.setBounds(100, 130, 150, 30);
+		
 		JButton button1 = new JButton("Print Differences");
 		button1.setBackground(Color.white);
 		button1.setBounds(450, 90, 150, 30);
@@ -69,7 +76,7 @@ public class SVNForm extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				String svnUrl = textField1.getText();
-				SVNLogUtil.getSVNDiff(svnUrl, textField2.getText(), textField3.getText());
+				SVNLogUtil.getSVNDiff(svnUrl, textField2.getText(), textField3.getText(), textField4.getText());
 			}
 		});
 		
@@ -84,9 +91,11 @@ public class SVNForm extends JFrame {
 		pane.add(label1);
 		pane.add(label2);
 		pane.add(label3);
+		pane.add(label4);
 		pane.add(textField1);
 		pane.add(textField2);
 		pane.add(textField3);
+		pane.add(textField4);
 		pane.add(button1);
 //		pane.add(scrollPane1);
 		

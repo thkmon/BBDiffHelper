@@ -146,14 +146,19 @@ public class FileWriteUtil {
 	 * 
 	 * @param filePath
 	 * @param content
+	 * @param charset
 	 * @param bAppend
 	 * @return
 	 * @throws IOException
 	 * @throws Exception
 	 */
-	public static boolean writeFile(String filePath, String content, boolean bAppend) throws IOException, Exception {
+	public static boolean writeFile(String filePath, String content, String charset, boolean bAppend) throws IOException, Exception {
 		if (filePath == null || filePath.length() == 0) {
 			return false;
+		}
+		
+		if (charset == null || charset.length() == 0) {
+			charset = "UTF-8";
 		}
 
 		File file = new File(filePath);
@@ -166,7 +171,7 @@ public class FileWriteUtil {
 
 		try {
 			fileOutputStream = new FileOutputStream(file, bAppend);
-			outputStreamWriter = new OutputStreamWriter(fileOutputStream, "UTF-8");
+			outputStreamWriter = new OutputStreamWriter(fileOutputStream, charset);
 			bufferedWriter = new BufferedWriter(outputStreamWriter);
 
 			bufferedWriter.write(content, 0, content.length());
