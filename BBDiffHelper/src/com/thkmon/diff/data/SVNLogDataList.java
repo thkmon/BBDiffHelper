@@ -53,13 +53,13 @@ public class SVNLogDataList extends ArrayList<SVNLogData> {
 	
 	
 	/**
-	 * (1) 우선 파일패스 순으로 정렬한다.
+	 * (1) SVN 내역을 우선 파일패스 순으로 정렬한다.
 	 * (2) 이어서 A, D, M 순으로 정렬한 리스트를 리턴한다.
 	 * 
 	 * @return
 	 */
 	public SVNLogDataList getSortedList() {
-		// (1) 우선 파일패스 순으로 정렬한다.
+		// (1) SVN 내역을 우선 파일패스 순으로 정렬한다.
 		Collections.sort(this, new Comparator<SVNLogData>() {
 			
 			@Override
