@@ -23,7 +23,7 @@ import com.thkmon.diff.util.SVNLogUtil;
 public class SVNForm extends JFrame {
 
 //	public static JTextArea area1 = null;
-	public static String version = "190729";
+	public static String version = "200722";
 	public static JTextField textField2 = null;
 	public static JTextField textField3 = null;
 	

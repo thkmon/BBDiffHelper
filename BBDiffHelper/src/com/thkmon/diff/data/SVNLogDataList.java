@@ -1,6 +1,8 @@
 package com.thkmon.diff.data;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class SVNLogDataList extends ArrayList<SVNLogData> {
 
@@ -51,11 +53,57 @@ public class SVNLogDataList extends ArrayList<SVNLogData> {
 	
 	
 	/**
-	 * A, D, M 순으로 정렬한 리스트를 리턴한다.
+	 * (1) 우선 파일패스 순으로 정렬한다.
+	 * (2) 이어서 A, D, M 순으로 정렬한 리스트를 리턴한다.
 	 * 
 	 * @return
 	 */
 	public SVNLogDataList getSortedList() {
+		// (1) 우선 파일패스 순으로 정렬한다.
+		Collections.sort(this, new Comparator<SVNLogData>() {
+			
+			@Override
+			public int compare(SVNLogData o1, SVNLogData o2) {
+				return compareString(o1.getPath(), o2.getPath());
+			}
+			
+			public int compareString(String s1, String s2) {
+				 int result = 0;
+                
+                if (s1 == null) {
+                	s1 = "";
+                }
+                
+                if (s2 == null) {
+                    s2 = "";
+                }
+                
+                int len1 = s1.length();
+                int len2 = s2.length();
+                int len = (len1 < len2) ? len1 : len2;
+                for (int i=0; i<len; i++) {
+                    if (s1.charAt(i) > s2.charAt(i)) {
+                        result = 1;
+                        break;
+                    } else if (s1.charAt(i) < s2.charAt(i)) {
+                        result = -1;
+                        break;
+                    }
+                }
+                
+                if (result == 0) {
+                    if (len1 > len2) {
+                        result = 1;
+                    } else if (len1 < len2) {
+                        result = -1;
+                    }
+                }
+                
+                return result;
+			}
+		});
+		
+		// (2) 이어서 A, D, M 순으로 정렬한 리스트를 리턴한다.
 		SVNLogDataList newList = new SVNLogDataList();
 		
 		SVNLogData oneData = null;
