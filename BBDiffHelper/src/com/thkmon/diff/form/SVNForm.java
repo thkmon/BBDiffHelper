@@ -30,7 +30,7 @@ public class SVNForm extends JFrame {
 	public SVNForm() {
 		final SVNForm form = this;
 		
-		form.setTitle("BBDiffHelper_" + version);
+		form.setTitle("BBSvnHelper_" + version);
 		form.setBounds(0, 0, 640, 250);
 		form.setLayout(null);
 		form.getContentPane().setLayout(null);

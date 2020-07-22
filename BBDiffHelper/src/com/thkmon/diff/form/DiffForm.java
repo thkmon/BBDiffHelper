@@ -25,7 +25,7 @@ public class DiffForm extends JFrame {
 		
 		DiffForm form = this;
 		
-		form.setTitle("BBDiffHelper");
+		form.setTitle("BBSvnHelper");
 		form.setBounds(0, 0, 800, 700);
 		form.setLayout(null);
 		form.getContentPane().setLayout(null);
