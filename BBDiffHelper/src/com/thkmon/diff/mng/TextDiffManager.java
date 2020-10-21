@@ -197,33 +197,49 @@ public class TextDiffManager {
 		int row1 = rowToStart1;
 		int row2 = rowToStart2;
 		
-		String line1 = "";
-		String line2 = "";
-		
 		boolean bLeftMode = true;
 		int limitNum = 0;
 		
 		while (true) {
 			if (bLeftMode) {
-				line1 = strList1.get(axisRow1);
-				line2 = strList2.get(row2);
+				// 내용 같으면 라인번호 리턴
+				int[] tmpArr1 = getIdxArrIfSameLine(strList1, strList2, axisRow1, row2);
+				if (tmpArr1 != null) {
+					return tmpArr1;
+				}
+				
+				// 내용 같으면 라인번호 리턴(보완)
+				if (axisRow1 != row2) {
+					int[] tmpArr2 = getIdxArrIfSameLine(strList1, strList2, axisRow1, axisRow1);
+					if (tmpArr2 != null) {
+						return tmpArr2;
+					}
+					
+					int[] tmpArr3 = getIdxArrIfSameLine(strList1, strList2, row2, row2);
+					if (tmpArr3 != null) {
+						return tmpArr3;
+					}
+				}
 				
 			} else {
-				line1 = strList1.get(row1);
-				line2 = strList2.get(axisRow2);
-			}
-			
-			// 내용 같으면 라인번호 리턴
-			if (line1.trim().length() > 0 && line1.equals(line2)) {
-				int[] arr = new int[2];
-				if (bLeftMode) {
-					arr[0] = axisRow1;
-					arr[1] = row2;
-				} else {
-					arr[0] = row1;
-					arr[1] = axisRow2;
+				// 내용 같으면 라인번호 리턴
+				int[] tmpArr1 = getIdxArrIfSameLine(strList1, strList2, row1, axisRow2);
+				if (tmpArr1 != null) {
+					return tmpArr1;
 				}
-				return arr;
+				
+				// 내용 같으면 라인번호 리턴(보완)
+				if (row1 != axisRow2) {
+					int[] tmpArr2 = getIdxArrIfSameLine(strList1, strList2, row1, row1);
+					if (tmpArr2 != null) {
+						return tmpArr2;
+					}
+					
+					int[] tmpArr3 = getIdxArrIfSameLine(strList1, strList2, axisRow2, axisRow2);
+					if (tmpArr3 != null) {
+						return tmpArr3;
+					}
+				}
 			}
 			
 			// 끝까지 왔으면 다음 로우를 검사하자.
@@ -348,5 +364,31 @@ public class TextDiffManager {
 			diffResultList.add("내용 : 추가");
 			diffResultList.add(addStr);
 		}
+	}
+	
+	
+	/**
+	 * 내용 같으면 라인번호 리턴 메서드
+	 * 
+	 * strList1 리스트의 idx1 인덱스 번째 내용과
+	 * strList2 리스트의 idx2 인덱스 번째 내용이 동일할 경우, 해당 인덱스를 배열에 담아 리턴한다.
+	 * 
+	 * @param strList1
+	 * @param strList2
+	 * @param idx1
+	 * @param idx2
+	 * @return
+	 */
+	private int[] getIdxArrIfSameLine(StringList strList1, StringList strList2, int idx1, int idx2) {
+		String line1 = strList1.getNotError(idx1);
+		String line2 = strList2.getNotError(idx2);
+		if (line1 != null && line1.trim().length() > 0 && line1.equals(line2)) {
+			int[] arr = new int[2];
+			arr[0] = idx1;
+			arr[1] = idx2;
+			return arr;
+		}
+		
+		return null;
 	}
 }
