@@ -24,8 +24,8 @@ public class SVNForm extends JFrame {
 
 //	public static JTextArea area1 = null;
 	public static String version = "201021";
-	public static JTextField textField2 = null;
-	public static JTextField textField3 = null;
+	public JTextField textField2 = null;
+	public JTextField textField3 = null;
 	
 	public SVNForm() {
 		final SVNForm form = this;
@@ -76,7 +76,7 @@ public class SVNForm extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				String svnUrl = textField1.getText();
-				SVNLogUtil.getSVNDiff(svnUrl, textField2.getText(), textField3.getText(), textField4.getText());
+				SVNLogUtil.getSVNDiff(svnUrl, textField2.getText(), textField3.getText(), textField4.getText(), textField2, textField3);
 			}
 		});
 		

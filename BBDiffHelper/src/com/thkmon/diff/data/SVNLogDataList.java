@@ -6,6 +6,36 @@ import java.util.Comparator;
 
 public class SVNLogDataList extends ArrayList<SVNLogData> {
 
+	private long startRevision = 0;
+	private long endRevision = 0;
+	
+	public long getStartRevision() {
+		return startRevision;
+	}
+
+	public void setStartRevision(long startRevision) {
+		this.startRevision = startRevision;
+	}
+
+	public long getEndRevision() {
+		return endRevision;
+	}
+
+	public void setEndRevision(long endRevision) {
+		this.endRevision = endRevision;
+	}
+	
+	/**
+	 * 생성자
+	 * 
+	 * @param startRevision
+	 * @param endRevision
+	 */
+	public SVNLogDataList(long startRevision, long endRevision) {
+		this.startRevision = startRevision;
+		this.endRevision = endRevision;
+	}
+	
 	public void addOrReplace(char newType, String newPath, long revision) {
 		if (newPath == null || newPath.length() == 0) {
 			return;
@@ -50,7 +80,6 @@ public class SVNLogDataList extends ArrayList<SVNLogData> {
 		newData.setNewRevision(revision);
 		this.add(newData);
 	}
-	
 	
 	/**
 	 * (1) SVN 내역을 우선 파일패스 순으로 정렬한다.
@@ -104,7 +133,7 @@ public class SVNLogDataList extends ArrayList<SVNLogData> {
 		});
 		
 		// (2) 이어서 A, D, M 순으로 정렬한 리스트를 리턴한다.
-		SVNLogDataList newList = new SVNLogDataList();
+		SVNLogDataList newList = new SVNLogDataList(this.getStartRevision(), this.getEndRevision());
 		
 		SVNLogData oneData = null;
 		int count = this.size();

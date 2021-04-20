@@ -9,6 +9,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
 
+import javax.swing.JTextField;
+
 import org.tmatesoft.svn.core.SVNLogEntry;
 import org.tmatesoft.svn.core.SVNLogEntryPath;
 import org.tmatesoft.svn.core.SVNProperties;
@@ -18,14 +20,13 @@ import org.tmatesoft.svn.core.io.SVNRepositoryFactory;
 
 import com.thkmon.diff.data.SVNLogData;
 import com.thkmon.diff.data.SVNLogDataList;
-import com.thkmon.diff.form.SVNForm;
 import com.thkmon.diff.mng.TextDiffManager;
 
 public class SVNLogUtil {
 	
 	private static String ENTER = StringUtil.ENTER;
 	
-	public static void getSVNDiff(String url, String strStartRevision, String strEndRevision, String charset) {
+	public static void getSVNDiff(String url, String strStartRevision, String strEndRevision, String charset, JTextField textField2, JTextField textField3) {
 		
 		try {
 			// String svnUser = "";
@@ -40,32 +41,45 @@ public class SVNLogUtil {
 			
 			if (strStartRevision != null && strStartRevision.length() > 0) {
 				startRevision = StringUtil.parseLong(strStartRevision);
-				if (startRevision == 0) {
-					startRevision = latestRevision;
+				if (startRevision < 0) {
+					startRevision = 0;
 				}
 			} else {
-				startRevision = latestRevision;
+				startRevision = 0;
 			}
 			
 			if (strEndRevision != null && strEndRevision.length() > 0) {
 				endRevision = StringUtil.parseLong(strEndRevision);
-				if (endRevision == 0) {
-					endRevision = latestRevision;
+				if (endRevision < 0) {
+					endRevision = 0;
 				}
 			} else {
-				endRevision = latestRevision;
+				endRevision = 0;
 			}
 			
-			SVNForm.textField2.setText("" + startRevision);
-			SVNForm.textField3.setText("" + endRevision);
-
+			// 리비전 숫자를 이상하게 입력하더라도 보정해서 동작하도록 수정
+			if (startRevision == 0 && endRevision == 0) {
+				startRevision = latestRevision;
+				endRevision = latestRevision;
+				
+			} else if (startRevision == 0) {
+				startRevision = endRevision;
+				
+			} else if (endRevision == 0) {
+				endRevision = startRevision;
+			}
+			
 			// BasicAuthenticationManager authManager = new BasicAuthenticationManager(svnUser, svnPassword);
 			// svnRepo.setAuthenticationManager(authManager);
 			
-			SVNLogDataList logDataList = getPathListFromSVNChangeLog(svnRepo, startRevision, endRevision);
+			SVNLogDataList logDataList = getPathListFromSVNChangeLog(svnRepo, startRevision, endRevision, textField2, textField3);
 			if (logDataList == null || logDataList.size() == 0) {
 				return;
 			}
+			
+			// 리비전 숫자가 변경되었을 수 있으므로 다시 가져옴
+			startRevision = logDataList.getStartRevision();
+			endRevision = logDataList.getEndRevision();
 			
 			logDataList = logDataList.getSortedList();
 			
@@ -152,34 +166,44 @@ public class SVNLogUtil {
 	}
 	
 	
-	public static SVNLogDataList getPathListFromSVNChangeLog(SVNRepository svnRepo, long startRevision, long endRevision) throws Exception {
+	public static SVNLogDataList getPathListFromSVNChangeLog(SVNRepository svnRepo, long startRevision, long endRevision, JTextField textField2, JTextField textField3) throws Exception {
 		if (svnRepo == null) {
 			throw new Exception("svnRepo is null.");
 		}
 		
-		if (startRevision < 0) {
-			throw new Exception("startRevision(" + startRevision + ") is less than zero.");
+		if (startRevision < 1) {
+			// throw new Exception("startRevision(" + startRevision + ") is less than zero.");
+			startRevision = 1;
 		}
 		
-		if (endRevision < 0) {
-			throw new Exception("endRevision(" + endRevision + ") is less than zero.");
+		if (endRevision < 1) {
+			// throw new Exception("endRevision(" + endRevision + ") is less than zero.");
+			endRevision = 1;
 		}
 		
 		long latestRevision = svnRepo.getLatestRevision();
 		
 		if (startRevision > latestRevision) {
-			throw new Exception("startRevision(" + startRevision + ") is greater than latestRevision(" + latestRevision + ").");
+			// throw new Exception("startRevision(" + startRevision + ") is greater than latestRevision(" + latestRevision + ").");
+			startRevision = latestRevision;
 		}
 		
 		if (endRevision > latestRevision) {
-			throw new Exception("endRevision(" + endRevision + ") is greater than latestRevision(" + latestRevision + ").");
+			// throw new Exception("endRevision(" + endRevision + ") is greater than latestRevision(" + latestRevision + ").");
+			endRevision = latestRevision;
 		}
 		
 		if (startRevision > endRevision) {
-			throw new Exception("startRevision(" + startRevision + ") is greater than endRevision(" + endRevision + ").");
+			// throw new Exception("startRevision(" + startRevision + ") is greater than endRevision(" + endRevision + ").");
+			long temp = startRevision;
+			startRevision = endRevision;
+			endRevision = temp;
 		}
 		
-		SVNLogDataList logDataList = new SVNLogDataList();
+		textField2.setText("" + startRevision);
+		textField3.setText("" + endRevision);
+		
+		SVNLogDataList logDataList = new SVNLogDataList(startRevision, endRevision);
 		
 		Collection<SVNLogEntry> logEntries = null;
 		logEntries = svnRepo.log(new String[] {""}, null, startRevision, endRevision, true, true);
